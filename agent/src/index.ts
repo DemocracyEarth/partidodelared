@@ -160,6 +160,8 @@ import { quickIntelPlugin } from "@elizaos/plugin-quick-intel";
 
 import { trikonPlugin } from "@elizaos/plugin-trikon";
 import arbitragePlugin from "@elizaos/plugin-arbitrage";
+import { partidodelared } from "./partidodelared.character";
+
 const __filename = fileURLToPath(import.meta.url); // get the resolved path to the file
 const __dirname = path.dirname(__filename); // get the name of the directory
 
@@ -483,7 +485,8 @@ export async function loadCharacters(
 
     if (loadedCharacters.length === 0) {
         elizaLogger.info("No characters found, using default character");
-        loadedCharacters.push(defaultCharacter);
+        // loadedCharacters.push(defaultCharacter);
+        loadedCharacters.push(partidodelared);
     }
 
     return loadedCharacters;
@@ -491,25 +494,39 @@ export async function loadCharacters(
 
 async function handlePluginImporting(plugins: string[]) {
     if (plugins.length > 0) {
-        elizaLogger.info("Plugins are: ", plugins);
+        elizaLogger.info("Plugins to load: ", plugins);
         const importedPlugins = await Promise.all(
             plugins.map(async (plugin) => {
                 try {
+                    elizaLogger.info(`Attempting to import plugin: ${plugin}`);
                     const importedPlugin = await import(plugin);
                     const functionName =
                         plugin
                             .replace("@elizaos/plugin-", "")
                             .replace(/-./g, (x) => x[1].toUpperCase()) +
-                        "Plugin"; // Assumes plugin function is camelCased with Plugin suffix
-                    return (
-                        importedPlugin.default || importedPlugin[functionName]
-                    );
+                        "Plugin";
+                    
+                    const pluginExport = importedPlugin.default || importedPlugin[functionName];
+                    if (!pluginExport) {
+                        elizaLogger.error(
+                            `Plugin ${plugin} does not export default or ${functionName}`
+                        );
+                        return [];
+                    }
+                    
+                    elizaLogger.info(`Successfully loaded plugin: ${plugin}`);
+                    return pluginExport;
                 } catch (importError) {
+                    const error = importError as Error;
                     elizaLogger.error(
-                        `Failed to import plugin: ${plugin}`,
-                        importError
+                        `Failed to import plugin: ${plugin}\nError: ${error.message}\nStack: ${error.stack}`
                     );
-                    return []; // Return null for failed imports
+                    if (error.message.includes("Cannot find module")) {
+                        elizaLogger.error(
+                            `Make sure the plugin "${plugin}" is installed and listed in package.json dependencies`
+                        );
+                    }
+                    return [];
                 }
             })
         );
@@ -1476,8 +1493,10 @@ const startAgents = async () => {
     let serverPort = Number.parseInt(settings.SERVER_PORT || "3000");
     const args = parseArguments();
     const charactersArg = args.characters || args.character;
-    let characters = [defaultCharacter];
+    // let characters = [defaultCharacter];
+    let characters = [partidodelared];
 
+    /*
     if (process.env.IQ_WALLET_ADDRESS && process.env.IQSOlRPC) {
         characters = await loadCharacterFromOnchain();
     }
@@ -1490,7 +1509,8 @@ const startAgents = async () => {
 
     // Normalize characters for injectable plugins
     characters = await Promise.all(characters.map(normalizeCharacter));
-
+    */
+   
     try {
         for (const character of characters) {
             await startAgent(character, directClient);

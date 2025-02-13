@@ -22,7 +22,7 @@ export const currentNewsAction: Action = {
         return true;
     },
     description:
-        "Get the latest news about a specific topic if asked by the user.",
+        "Obtener las últimas noticias sobre un tema específico si el usuario lo solicita.",
     handler: async (
         _runtime: IAgentRuntime,
         _message: Memory,
@@ -36,7 +36,7 @@ export const currentNewsAction: Action = {
 
                 const [everythingResponse, headlinesResponse] = await Promise.all([
                     fetch(
-                        `https://newsapi.org/v2/everything?q=${enhancedSearchTerm}&sortBy=relevancy&language=en&pageSize=50&apiKey=${process.env.NEWS_API_KEY}`
+                        `https://newsapi.org/v2/everything?q=${enhancedSearchTerm}&sortBy=relevancy&language=es&pageSize=50&apiKey=${process.env.NEWS_API_KEY}`
                     ),
                     fetch(
                         `https://newsapi.org/v2/top-headlines?q=${searchTerm}&country=es&language=en&pageSize=50&apiKey=${process.env.NEWS_API_KEY}`
@@ -65,27 +65,27 @@ export const currentNewsAction: Action = {
                 ).slice(0, 15);
 
                 if (!uniqueArticles.length) {
-                    return "No news articles found.";
+                    return "No se encontraron artículos de noticias.";
                 }
 
                 return uniqueArticles.map((article, index) => {
                     const content = article.description || 'No content available';
                     const urlDomain = article.url ? new URL(article.url).hostname : '';
                     return [
-                        `📰 Article ${index + 1}`,
+                        `📰 Artículo ${index + 1}`,
                         '━━━━━━━━━━━━━━━━━━━━━━',
-                        `📌 **${article.title || 'No title'}**\n`,
+                        `📌 **${article.title || 'Sin título'}**\n`,
                         `📝 ${content}\n`,
-                        `🔗 Read more at: ${urlDomain}`
+                        `🔗 Leer más en: ${urlDomain}`
                     ].join('\n');
                 }).join('\n');
             } catch (error) {
-                console.error('Failed to fetch news:', error);
-                return 'Sorry, there was an error fetching the news.';
+                console.error('Error al obtener noticias:', error);
+                return 'Lo siento, hubo un error al obtener las noticias.';
             }
         }
 
-        const context = `What is the specific topic or subject the user wants news about? Extract ONLY the search term from this message: "${_message.content.text}". Return just the search term with no additional text, punctuation, or explanation.`
+        const context = `¿Cuál es el tema o asunto específico sobre el que el usuario quiere noticias? Extrae SOLO el término de búsqueda de este mensaje: "${_message.content.text}". Devuelve solo el término de búsqueda sin texto adicional, puntuación o explicación.`
 
         const searchTerm = await generateText({
             runtime: _runtime,
@@ -98,7 +98,7 @@ export const currentNewsAction: Action = {
         console.log("Search term extracted:", searchTerm);
 
         const currentNews = await getCurrentNews(searchTerm);
-        const responseText = ` *protocol droid noises*\n\n${currentNews}`;
+        const responseText = ` *Ultimas novedades*\n\n${currentNews}`;
 
 
         const newMemory: Memory = {
@@ -122,7 +122,7 @@ export const currentNewsAction: Action = {
         [
             {
                 user: "{{user1}}",
-                content: { text: "what's the latest news about <searchTerm>?" },
+                content: { text: "¿cuáles son las últimas noticias sobre <searchTerm>?" },
             },
             {
                 user: "{{user2}}",
@@ -133,7 +133,7 @@ export const currentNewsAction: Action = {
         [
             {
                 user: "{{user1}}",
-                content: { text: "can you show me the latest news about <searchTerm>?" },
+                content: { text: "¿puedes mostrarme las últimas noticias sobre <searchTerm>?" },
             },
             {
                 user: "{{user2}}",
@@ -144,7 +144,7 @@ export const currentNewsAction: Action = {
         [
             {
                 user: "{{user1}}",
-                content: { text: "what's in the <searchTerm> news today?" },
+                content: { text: "¿qué hay en las noticias de <searchTerm> hoy?" },
             },
             {
                 user: "{{user2}}",
@@ -155,7 +155,7 @@ export const currentNewsAction: Action = {
         [
             {
                 user: "{{user1}}",
-                content: { text: "show me current events about <searchTerm>?" },
+                content: { text: "muéstrame los eventos actuales sobre <searchTerm>" },
             },
             {
                 user: "{{user2}}",
@@ -166,7 +166,7 @@ export const currentNewsAction: Action = {
         [
             {
                 user: "{{user1}}",
-                content: { text: "what's going on in the world of <searchTerm>?" },
+                content: { text: "¿qué está pasando en el mundo de <searchTerm>?" },
             },
             {
                 user: "{{user2}}",
@@ -177,7 +177,7 @@ export const currentNewsAction: Action = {
         [
             {
                 user: "{{user1}}",
-                content: { text: "give me the latest headlines about <searchTerm>?" },
+                content: { text: "dame los últimos titulares sobre <searchTerm>" },
             },
             {
                 user: "{{user2}}",
@@ -188,7 +188,7 @@ export const currentNewsAction: Action = {
         [
             {
                 user: "{{user1}}",
-                content: { text: "show me news updates about <searchTerm>?" },
+                content: { text: "muéstrame las actualizaciones de noticias sobre <searchTerm>" },
             },
             {
                 user: "{{user2}}",
@@ -199,7 +199,7 @@ export const currentNewsAction: Action = {
         [
             {
                 user: "{{user1}}",
-                content: { text: "what are today's top stories about <searchTerm>?" },
+                content: { text: "¿cuáles son las principales noticias de hoy sobre <searchTerm>?" },
             },
             {
                 user: "{{user2}}",

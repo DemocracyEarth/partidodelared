@@ -1,7 +1,7 @@
 # 🤖 Agente del Partido de la Red
 
 <div align="center">
-  <img src="./docs/assets/pdr.jpg" alt="Partido de la Red Agent Banner" width="100%" />
+  <img src="./docs/assets/pdr.jpg" alt="Partido de la Red Agent Banner" width="200px" />
 </div>
 
 ## 📑 Descripción
